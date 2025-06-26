@@ -1,11 +1,20 @@
 /* eslint-env jest */
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import App from './App';
+
+// Mock fetch for EmailJS
+beforeAll(() => {
+  global.fetch = jest.fn(() => Promise.resolve({ ok: true }));
+});
+afterAll(() => {
+  global.fetch.mockRestore();
+});
 
 describe('To-Do List App', () => {
   beforeEach(() => {
     localStorage.clear();
+    fetch.mockClear();
   });
 
   it('renders title and add button', () => {
@@ -25,7 +34,6 @@ describe('To-Do List App', () => {
     render(<App />);
     fireEvent.change(screen.getByPlaceholderText(/add a task/i), { target: { value: 'Complete Me' } });
     fireEvent.click(screen.getByText(/\+ ADD TASK/i));
-    // Use getByText to find the checkbox span and click it
     const checkbox = screen.getByText('Complete Me').parentElement.querySelector('.checkbox');
     fireEvent.click(checkbox);
     expect(screen.getByText('Complete Me').parentElement).toHaveClass('completed');
@@ -37,5 +45,15 @@ describe('To-Do List App', () => {
     fireEvent.click(screen.getByText(/\+ ADD TASK/i));
     fireEvent.click(screen.getByTitle('Remove'));
     expect(screen.queryByText('Remove Me')).not.toBeInTheDocument();
+  });
+
+  it('emails the list', async () => {
+    render(<App />);
+    fireEvent.change(screen.getByPlaceholderText(/add a task/i), { target: { value: 'Email Task' } });
+    fireEvent.click(screen.getByText(/\+ ADD TASK/i));
+    fireEvent.change(screen.getByPlaceholderText(/your email address/i), { target: { value: 'test@example.com' } });
+    fireEvent.click(screen.getByText(/email me my list/i));
+    await waitFor(() => expect(fetch).toHaveBeenCalled());
+    expect(screen.getByText(/sent!/i)).toBeInTheDocument();
   });
 });

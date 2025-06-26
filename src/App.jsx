@@ -1,12 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
+// Mock email sender for demo purposes
+function sendEmail(email, tasks) {
+  // Simulate sending and log to console
+  return new Promise(resolve => {
+    setTimeout(() => {
+      // eslint-disable-next-line no-console
+      console.log(`Pretend sent to ${email}:\n` + tasks.map((t, i) => `${i+1}. ${t.completed ? '[x]' : '[ ]'} ${t.text}`).join('\n'));
+      resolve(true);
+    }, 1000);
+  });
+}
+
 function App() {
   const [tasks, setTasks] = useState(() => {
     const local = localStorage.getItem('tasks');
     return local ? JSON.parse(local) : [];
   });
   const [input, setInput] = useState('');
+  const [email, setEmail] = useState('');
+  const [emailStatus, setEmailStatus] = useState('idle');
 
   useEffect(() => {
     localStorage.setItem('tasks', JSON.stringify(tasks));
@@ -26,6 +40,12 @@ function App() {
   }
   function removeTask(i) {
     setTasks(tasks => tasks.filter((_, idx) => idx !== i));
+  }
+  async function handleEmail() {
+    setEmailStatus('sending');
+    const ok = await sendEmail(email, tasks);
+    setEmailStatus(ok ? 'sent' : 'error');
+    setTimeout(() => setEmailStatus('idle'), 3000);
   }
 
   return (
@@ -55,6 +75,17 @@ function App() {
         />
         <button className="add-btn" onClick={addTask}>+ ADD TASK</button>
       </div>
+      <input
+        className="add-input"
+        style={{ marginTop: 18 }}
+        type="email"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        placeholder="Your email address"
+      />
+      <button className="email-btn" onClick={handleEmail} disabled={!email || !tasks.length || emailStatus==='sending'}>
+        {emailStatus === 'sending' ? 'Sending...' : emailStatus === 'sent' ? 'Sent!' : emailStatus === 'error' ? 'Error!' : 'Email Me My List'}
+      </button>
     </div>
   );
 }

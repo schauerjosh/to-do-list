@@ -1,4 +1,4 @@
-/* Modern dark UI inspired by provided design */
+/* Modern dark UI with metallic gold and improved contrast */
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -47,74 +47,80 @@
 .container {
   max-width: 400px;
   margin: 40px auto;
-  background: #18191c;
+  background: linear-gradient(135deg, #18191c 80%, #232325 100%);
   border-radius: 18px;
-  box-shadow: 0 4px 32px #000a, 0 1.5px 0 #222 inset;
+  box-shadow: 0 6px 32px #000a, 0 2px 0 #222 inset;
   padding: 32px 24px 24px 24px;
   color: #fff;
 }
 .title {
   font-size: 2.2rem;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.04em;
   margin-bottom: 18px;
   text-align: center;
+  color: #fff;
+  text-shadow: 0 2px 12px #000, 0 0 8px #ffd700cc;
 }
 .progress-bar-bg {
   width: 100%;
-  height: 12px;
+  height: 14px;
   background: #232325;
   border-radius: 8px;
   margin-bottom: 28px;
-  box-shadow: 0 1px 4px #0006 inset;
+  box-shadow: 0 1px 8px #0008 inset;
   overflow: hidden;
 }
 .progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, #ffe082 0%, #ffd600 100%);
+  background: linear-gradient(90deg, #fffbe6 0%, #ffd700 40%, #bfa14a 100%);
   border-radius: 8px;
+  box-shadow: 0 0 8px #ffd70099, 0 0 16px #fffbe6cc;
   transition: width 0.3s cubic-bezier(.4,2,.6,1);
 }
 .tasks-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
   margin-bottom: 24px;
 }
 .task {
   display: flex;
   align-items: center;
-  background: #232325;
-  border-radius: 10px;
+  background: linear-gradient(120deg, #232325 80%, #18191c 100%);
+  border-radius: 12px;
   padding: 18px 18px 18px 16px;
   font-size: 1.1rem;
-  font-weight: 500;
+  font-weight: 600;
   color: #fff;
-  box-shadow: 0 1px 4px #0003;
-  transition: background 0.2s;
+  box-shadow: 0 2px 12px #0006, 0 0 0 2px #ffd70033;
+  transition: background 0.2s, box-shadow 0.2s;
 }
 .task.completed {
   color: #ffe082;
   opacity: 0.7;
   text-decoration: line-through;
+  box-shadow: 0 2px 12px #0006, 0 0 0 2px #ffd70055;
 }
 .checkbox {
   width: 28px;
   height: 28px;
-  border: 2px solid #ffd600;
-  border-radius: 6px;
+  border: 2.5px solid #ffd700;
+  border-radius: 7px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 16px;
   cursor: pointer;
-  background: #18191c;
-  transition: background 0.2s;
+  background: linear-gradient(120deg, #fffbe6 0%, #ffd700 60%, #bfa14a 100%);
+  box-shadow: 0 0 8px #ffd70099, 0 0 2px #fffbe6cc;
+  transition: background 0.2s, border-color 0.2s;
 }
 .checkmark {
-  color: #ffd600;
+  color: #ffd700;
   font-size: 1.3em;
   font-weight: bold;
+  text-shadow: 0 0 8px #ffd700cc, 0 0 2px #fffbe6cc;
 }
 .box {
   width: 16px;
@@ -124,18 +130,21 @@
 .task-text {
   flex: 1;
   font-size: 1.1em;
+  text-shadow: 0 1px 4px #000a;
 }
 .remove-btn {
   background: none;
   border: none;
-  color: #ffd600;
+  color: #ffd700;
   font-size: 1.3em;
   cursor: pointer;
   margin-left: 10px;
   transition: color 0.2s;
+  text-shadow: 0 0 8px #ffd70099;
 }
 .remove-btn:hover {
   color: #ff5252;
+  text-shadow: 0 0 8px #ff525299;
 }
 .add-task-row {
   display: flex;
@@ -152,21 +161,30 @@
   font-size: 1em;
   outline: none;
   box-shadow: 0 1px 4px #0002;
+  font-weight: 500;
 }
-.add-btn {
-  background: #18191c;
-  color: #ffd600;
-  border: 1.5px solid #ffd600;
+.add-btn, .email-btn {
+  background: linear-gradient(90deg, #fffbe6 0%, #ffd700 60%, #bfa14a 100%);
+  color: #18191c;
+  border: 1.5px solid #ffd700;
   border-radius: 8px;
   padding: 0 18px;
   font-size: 1em;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  box-shadow: 0 0 8px #ffd70099;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  margin-left: 0.5em;
 }
-.add-btn:hover {
-  background: #ffd600;
+.add-btn:hover, .email-btn:hover {
+  background: #ffd700;
   color: #18191c;
+  box-shadow: 0 0 16px #ffd700cc;
+}
+.email-btn {
+  margin-top: 18px;
+  width: 100%;
+  display: block;
 }
 @media (max-width: 600px) {
   .container {
