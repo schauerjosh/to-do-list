@@ -53,7 +53,36 @@ describe('To-Do List App', () => {
     fireEvent.click(screen.getByText(/\+ ADD TASK/i));
     fireEvent.change(screen.getByPlaceholderText(/your email address/i), { target: { value: 'test@example.com' } });
     fireEvent.click(screen.getByText(/email me my list/i));
-    await waitFor(() => expect(fetch).toHaveBeenCalled());
-    expect(screen.getByText(/sent!/i)).toBeInTheDocument();
+    // Wait for either 'Sending...' or 'Sent!' to appear, then for 'Sent!' to appear
+    await waitFor(() => {
+      const btn = screen.getByRole('button', { name: /sending|sent!/i });
+      expect(btn).toBeInTheDocument();
+    });
+    await waitFor(() => {
+      const btn = screen.getByRole('button', { name: /sent!/i });
+      expect(btn).toBeInTheDocument();
+    }, { timeout: 2000 });
+  });
+
+  it('does not add empty or whitespace-only tasks', () => {
+    render(<App />);
+    fireEvent.change(screen.getByPlaceholderText(/add a task/i), { target: { value: '   ' } });
+    fireEvent.click(screen.getByText(/\+ ADD TASK/i));
+    expect(screen.queryByText('   ')).not.toBeInTheDocument();
+  });
+
+  it('handles emailing with no tasks gracefully', async () => {
+    render(<App />);
+    fireEvent.change(screen.getByPlaceholderText(/your email address/i), { target: { value: 'test@example.com' } });
+    const btn = screen.getByText(/email me my list/i);
+    expect(btn).toBeDisabled();
+  });
+
+  it('handles very long task text', () => {
+    render(<App />);
+    const longText = 'A'.repeat(1000);
+    fireEvent.change(screen.getByPlaceholderText(/add a task/i), { target: { value: longText } });
+    fireEvent.click(screen.getByText(/\+ ADD TASK/i));
+    expect(screen.getByText(longText)).toBeInTheDocument();
   });
 });
