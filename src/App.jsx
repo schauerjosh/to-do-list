@@ -1,18 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import './App.css';
 
-// Mock email sender for demo purposes
-function sendEmail(email, tasks) {
-  // Simulate sending and log to console
+// --- Utility Functions ---
+function formatTasksForEmail(tasks) {
+  return tasks.map((t, i) => `${i + 1}. ${t.completed ? '[x]' : '[ ]'} ${t.text}`).join('\n');
+}
+
+function sendEmailMock(email, tasks) {
   return new Promise(resolve => {
     setTimeout(() => {
       // eslint-disable-next-line no-console
-      console.log(`Pretend sent to ${email}:\n` + tasks.map((t, i) => `${i+1}. ${t.completed ? '[x]' : '[ ]'} ${t.text}`).join('\n'));
+      console.log(`Pretend sent to ${email}:\n` + formatTasksForEmail(tasks));
       resolve(true);
     }, 1000);
   });
 }
 
+// --- Main Component ---
 function App() {
   const [tasks, setTasks] = useState(() => {
     const local = localStorage.getItem('tasks');
@@ -26,27 +30,31 @@ function App() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }, [tasks]);
 
-  const completed = tasks.filter(t => t.completed).length;
+  const completed = useMemo(() => tasks.filter(t => t.completed).length, [tasks]);
   const total = tasks.length;
   const progress = total ? (completed / total) * 100 : 0;
 
-  function addTask() {
-    if (!input.trim()) return;
-    setTasks([...tasks, { text: input.trim(), completed: false }]);
+  const addTask = useCallback(() => {
+    const trimmed = input.trim();
+    if (!trimmed) return;
+    setTasks(tsk => [...tsk, { text: trimmed, completed: false }]);
     setInput('');
-  }
-  function toggleTask(i) {
-    setTasks(tasks => tasks.map((t, idx) => idx === i ? { ...t, completed: !t.completed } : t));
-  }
-  function removeTask(i) {
-    setTasks(tasks => tasks.filter((_, idx) => idx !== i));
-  }
-  async function handleEmail() {
+  }, [input]);
+
+  const toggleTask = useCallback(i => {
+    setTasks(tsk => tsk.map((t, idx) => idx === i ? { ...t, completed: !t.completed } : t));
+  }, []);
+
+  const removeTask = useCallback(i => {
+    setTasks(tsk => tsk.filter((_, idx) => idx !== i));
+  }, []);
+
+  const handleEmail = useCallback(async () => {
     setEmailStatus('sending');
-    const ok = await sendEmail(email, tasks);
+    const ok = await sendEmailMock(email, tasks);
     setEmailStatus(ok ? 'sent' : 'error');
     setTimeout(() => setEmailStatus('idle'), 3000);
-  }
+  }, [email, tasks]);
 
   return (
     <div className="container">
