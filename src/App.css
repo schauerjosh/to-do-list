@@ -53,6 +53,51 @@
   --purple-accent: #7c4dff;
   --card-bg: linear-gradient(120deg, #232325 80%, #18191c 100%);
   --card-bg-accent: linear-gradient(120deg, #232325 60%, #2d3a5a 100%);
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background: #18191c;
+  color: #fff;
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 1.08em;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button, .MuiButton-root {
+  border-radius: 10px;
+  font-weight: 700;
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  box-shadow: 0 0 8px #ffd70033;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+input, .MuiInputBase-root, .MuiTextField-root {
+  border-radius: 8px;
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  background: #232325;
+  color: #fff;
+}
+
+.MuiDialog-paper {
+  border-radius: 18px !important;
+  background: linear-gradient(120deg, #232325 80%, #2d3a5a 100%) !important;
+}
+
+.MuiPaper-root {
+  background: linear-gradient(120deg, #232325 80%, #18191c 100%) !important;
+  color: #fff !important;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  background: #232325;
+}
+::-webkit-scrollbar-thumb {
+  background: #2d3a5a;
+  border-radius: 8px;
 }
 
 .container {
@@ -290,6 +335,27 @@ select:focus {
     width: 100%;
     margin-left: 0;
     margin-top: 6px;
+  }
+  .big-modal {
+    min-width: 0;
+    max-width: 99vw;
+    padding: 28px 8vw 24px 8vw;
+    font-size: 1.08em;
+  }
+  .big-input {
+    min-width: 0;
+    max-width: 98vw;
+    font-size: 1.08em;
+    padding: 14px 10px;
+  }
+  .toaster {
+    min-width: 0;
+    max-width: 98vw;
+    padding: 24px 4vw 18px 4vw;
+    font-size: 1em;
+  }
+  .toaster-title {
+    font-size: 1.3em;
   }
 }
 @media (min-width: 601px) {

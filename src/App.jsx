@@ -2,6 +2,22 @@ import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { suggestTask } from './aiPriority';
 import { mindDumpSort } from './aiMindDump';
 import './App.css';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+import EmailIcon from '@mui/icons-material/Email';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects';
 
 // --- Utility Functions ---
 function formatTasksForEmail(tasks) {
@@ -292,39 +308,39 @@ function App() {
   }
 
   return (
-    <div className="container" ref={containerRef}>
-      <h1 className="page-title">Next-Gen To-Do List</h1>
-      <div className="progress-bar-bg">
-        <div className="progress-bar" style={{ width: `${progress}%` }} />
-      </div>
+    <Box className="container" ref={containerRef}>
+      <Typography variant="h1" className="page-title" gutterBottom>Next-Gen To-Do List</Typography>
+      <Box className="progress-bar-bg">
+        <Box className="progress-bar" sx={{ width: `${progress}%` }} />
+      </Box>
       {/* --- Mood Toaster --- */}
       {showMoodToaster && (
-        <div className="toaster mood-toaster fade-in-up">
-          <span className="toaster-title">How are you feeling?</span>
-          <div className="toaster-moods">
-            <button className={`mood-btn${mood==='focused'?' selected':''}`} onClick={()=>{setMood('focused');setShowMoodToaster(false);}} title="Focused" aria-label="Focused">😃</button>
-            <button className={`mood-btn${mood==='neutral'?' selected':''}`} onClick={()=>{setMood('neutral');setShowMoodToaster(false);}} title="Neutral" aria-label="Neutral">😐</button>
-            <button className={`mood-btn${mood==='foggy'?' selected':''}`} onClick={()=>{setMood('foggy');setShowMoodToaster(false);}} title="Foggy" aria-label="Foggy">😵‍💫</button>
-            <button className={`mood-btn${mood==='tired'?' selected':''}`} onClick={()=>{setMood('tired');setShowMoodToaster(false);}} title="Tired" aria-label="Tired">😴</button>
-          </div>
-        </div>
+        <Paper elevation={8} className="toaster mood-toaster fade-in-up">
+          <Typography className="toaster-title">How are you feeling?</Typography>
+          <Box className="toaster-moods">
+            <Button className={`mood-btn${mood==='focused'?' selected':''}`} onClick={()=>{setMood('focused');setShowMoodToaster(false);}} title="Focused" aria-label="Focused">😃</Button>
+            <Button className={`mood-btn${mood==='neutral'?' selected':''}`} onClick={()=>{setMood('neutral');setShowMoodToaster(false);}} title="Neutral" aria-label="Neutral">😐</Button>
+            <Button className={`mood-btn${mood==='foggy'?' selected':''}`} onClick={()=>{setMood('foggy');setShowMoodToaster(false);}} title="Foggy" aria-label="Foggy">😵‍💫</Button>
+            <Button className={`mood-btn${mood==='tired'?' selected':''}`} onClick={()=>{setMood('tired');setShowMoodToaster(false);}} title="Tired" aria-label="Tired">😴</Button>
+          </Box>
+        </Paper>
       )}
       {/* --- End Mood Toaster --- */}
-      <div className="tasks-list">
+      <Box className="tasks-list">
         {tasks.map((task, i) => (
-          <div className={`task${task.completed ? ' completed' : ''} ${animStates[i] || ''}`.trim()} key={i}>
-            <span className="checkbox" aria-label="Toggle task completion" onClick={() => toggleTask(i)} data-testid="checkbox">
+          <Paper className={`task${task.completed ? ' completed' : ''} ${animStates[i] || ''}`.trim()} key={i} elevation={task.completed ? 2 : 6}>
+            <IconButton className="checkbox" aria-label="Toggle task completion" onClick={() => toggleTask(i)} data-testid="checkbox" color={task.completed ? 'primary' : 'default'}>
               {task.completed ? <span className="checkmark">✔</span> : <span className="box" />}
-            </span>
-            <span className="task-title">{task.text}</span>
+            </IconButton>
+            <Typography className="task-title">{task.text}</Typography>
             {/* --- AI Tip --- */}
-            <div className="ai-tip">💡 {getAiTip(task)}</div>
+            <Box className="ai-tip" display="flex" alignItems="center"><LightbulbIcon sx={{mr:1}} fontSize="small" /> {getAiTip(task)}</Box>
             {/* --- AI Idea for Creative Tasks --- */}
             {getAiIdea(task) && (
-              <div className="ai-idea">✨ AI Idea: {getAiIdea(task)}</div>
+              <Box className="ai-idea" display="flex" alignItems="center"><EmojiObjectsIcon sx={{mr:1}} fontSize="small" /> AI Idea: {getAiIdea(task)}</Box>
             )}
             {/* --- Progress Slider & Worked On It Button --- */}
-            <div className="progress-row">
+            <Box className="progress-row">
               <input
                 type="range"
                 min="0"
@@ -337,232 +353,248 @@ function App() {
                 style={{marginLeft:8, marginRight:8, verticalAlign:'middle'}}
               />
               <span className="progress-label">{task.progress || 0}%</span>
-              <button className="worked-btn" onClick={() => handleWorkedOnIt(i)} style={{marginLeft:8}}>Worked on it</button>
+              <Button className="worked-btn" onClick={() => handleWorkedOnIt(i)} sx={{ml:1}} variant="outlined" color="secondary">Worked on it</Button>
               {task.streak > 0 && (
                 <span className="streak-label" title="Momentum!" style={{marginLeft:8, color:'#ffd700', fontWeight:600}}>
                   🔥 {task.streak}d
                 </span>
               )}
-            </div>
+            </Box>
             {task.recurring && (
-              <span className="recurring-info">Recurring: {task.recurring.type==='custom'?`Every ${task.recurring.interval} days`:task.recurring.type} | Next: {formatNextDue(task)}</span>
+              <Typography className="recurring-info" variant="caption">Recurring: {task.recurring.type==='custom'?`Every ${task.recurring.interval} days`:task.recurring.type} | Next: {formatNextDue(task)}</Typography>
             )}
-            <button className="remove-btn" onClick={() => removeTask(i)} title="Remove">×</button>
-            <button className="miss-btn" onClick={() => markTaskMissed(i)} title="Mark as Missed">Missed?</button>
-          </div>
+            <IconButton className="remove-btn" onClick={() => removeTask(i)} title="Remove" color="error"><DeleteIcon /></IconButton>
+            <Button className="miss-btn" onClick={() => markTaskMissed(i)} title="Mark as Missed" color="warning" variant="text">Missed?</Button>
+          </Paper>
         ))}
-      </div>
+      </Box>
       {/* Missed Reason Prompt Modal */}
-      {missPromptIdx !== null && (
-        <div className="modal-bg">
-          <div className="modal">
-            <h3>Why did you miss this task?</h3>
-            <input
-              className="add-input"
-              value={missReason}
-              onChange={e => setMissReason(e.target.value)}
-              placeholder="Why did you miss this task?"
-              autoFocus
-            />
-            <button className="add-btn" onClick={submitMissReason} disabled={!missReason.trim()}>Submit</button>
-            <button className="remove-btn" onClick={() => setMissPromptIdx(null)}>Cancel</button>
-          </div>
-        </div>
-      )}
+      <Dialog open={missPromptIdx !== null} onClose={()=>setMissPromptIdx(null)}>
+        <DialogTitle>Why did you miss this task?</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Reason"
+            fullWidth
+            variant="outlined"
+            value={missReason}
+            onChange={e => setMissReason(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={submitMissReason} disabled={!missReason.trim()} variant="contained" color="primary">Submit</Button>
+          <Button onClick={()=>setMissPromptIdx(null)} color="secondary">Cancel</Button>
+        </DialogActions>
+      </Dialog>
       {/* Recurring Task Modal */}
-      {recurringModalOpen && (
-        <div className="modal-bg">
-          <div className="modal">
-            <h3>Add Recurring Task</h3>
-            <input
-              className="add-input"
-              value={recurringInput.text}
-              onChange={e => setRecurringInput(v => ({ ...v, text: e.target.value }))}
-              placeholder="Task description"
-              autoFocus
-            />
-            <div style={{margin:'12px 0'}}>
-              <label>
-                <input type="radio" name="rtype" checked={recurringInput.type==='daily'} onChange={()=>setRecurringInput(v=>({...v,type:'daily'}))}/> Daily
-              </label>
-              <label style={{marginLeft:12}}>
-                <input type="radio" name="rtype" checked={recurringInput.type==='weekly'} onChange={()=>setRecurringInput(v=>({...v,type:'weekly'}))}/> Weekly
-              </label>
-              <label style={{marginLeft:12}}>
-                <input type="radio" name="rtype" checked={recurringInput.type==='custom'} onChange={()=>setRecurringInput(v=>({...v,type:'custom'}))}/> Custom every
-                <input
-                  type="number"
-                  min="1"
-                  value={recurringInput.interval}
-                  onChange={e => setRecurringInput(v => ({ ...v, type:'custom', interval: e.target.value }))}
-                  style={{width:40,marginLeft:4,marginRight:4}}
-                  disabled={recurringInput.type!=='custom'}
-                /> days
-              </label>
-            </div>
-            <button className="add-btn" onClick={addRecurringTask} disabled={!recurringInput.text.trim()}>Add</button>
-            <button className="remove-btn" onClick={()=>setRecurringModalOpen(false)}>Cancel</button>
-          </div>
-        </div>
-      )}
+      <Dialog open={recurringModalOpen} onClose={()=>setRecurringModalOpen(false)}>
+        <DialogTitle>Add Recurring Task</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Task description"
+            fullWidth
+            variant="outlined"
+            value={recurringInput.text}
+            onChange={e => setRecurringInput(v => ({ ...v, text: e.target.value }))}
+          />
+          <Box sx={{mt:2, mb:1}}>
+            <label>
+              <input type="radio" name="rtype" checked={recurringInput.type==='daily'} onChange={()=>setRecurringInput(v=>({...v,type:'daily'}))}/> Daily
+            </label>
+            <label style={{marginLeft:12}}>
+              <input type="radio" name="rtype" checked={recurringInput.type==='weekly'} onChange={()=>setRecurringInput(v=>({...v,type:'weekly'}))}/> Weekly
+            </label>
+            <label style={{marginLeft:12}}>
+              <input type="radio" name="rtype" checked={recurringInput.type==='custom'} onChange={()=>setRecurringInput(v=>({...v,type:'custom'}))}/> Custom every
+              <input
+                type="number"
+                min="1"
+                value={recurringInput.interval}
+                onChange={e => setRecurringInput(v => ({ ...v, type:'custom', interval: e.target.value }))}
+                style={{width:40,marginLeft:4,marginRight:4}}
+                disabled={recurringInput.type!=='custom'}
+              /> days
+            </label>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={addRecurringTask} disabled={!recurringInput.text.trim()} variant="contained" color="primary">Add</Button>
+          <Button onClick={()=>setRecurringModalOpen(false)} color="secondary">Cancel</Button>
+        </DialogActions>
+      </Dialog>
       {/* Mind Dump Modal */}
-      {mindDumpOpen && (
-        <div className="modal-bg">
-          <div className="mind-dump-modal">
-            <h3>Brain Dump</h3>
-            <textarea
-              className="mind-dump-textarea"
-              value={mindDumpText}
-              onChange={e=>setMindDumpText(e.target.value)}
-              placeholder="Type anything on your mind..."
-              autoFocus
-            />
-            <button className="add-btn" onClick={handleMindDump} disabled={!mindDumpText.trim()}>Organize</button>
-            {mindDumpResult && (
-              <div style={{marginTop:16}}>
-                <b>AI Sorted:</b>
-                <div className="mind-dump-tags">
-                  {mindDumpResult.tags.map((t,i)=>(
-                    <span className="mind-dump-tag" key={i}>{t.tag}</span>
-                  ))}
-                </div>
-                <button className="add-btn" style={{marginTop:12}} onClick={handleAddMindDumpTasks}>Add to List</button>
-              </div>
-            )}
-            <button className="remove-btn" style={{marginTop:10}} onClick={()=>setMindDumpOpen(false)}>Cancel</button>
-          </div>
-        </div>
-      )}
+      <Dialog open={mindDumpOpen} onClose={()=>setMindDumpOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Brain Dump</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Type anything on your mind..."
+            fullWidth
+            multiline
+            minRows={3}
+            variant="outlined"
+            value={mindDumpText}
+            onChange={e=>setMindDumpText(e.target.value)}
+          />
+          {mindDumpResult && (
+            <Box sx={{mt:2}}>
+              <b>AI Sorted:</b>
+              <Box className="mind-dump-tags" sx={{mt:1}}>
+                {mindDumpResult.tags.map((t,i)=>(
+                  <span className="mind-dump-tag" key={i}>{t.tag}</span>
+                ))}
+              </Box>
+              <Button sx={{mt:2}} onClick={handleAddMindDumpTasks} variant="contained" color="primary">Add to List</Button>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=>setMindDumpOpen(false)} color="secondary">Cancel</Button>
+        </DialogActions>
+      </Dialog>
       {/* --- Floating Action Bar --- */}
-      <div className="action-bar">
-        <button className="action-btn" title="Add Task" onClick={()=>setShowAddTaskModal(true)}>
-          <span className="action-icon">➕</span>
-          <span className="action-label">Add Task</span>
-        </button>
-        <button className="action-btn" title="Add Recurring Task" onClick={() => setRecurringModalOpen(true)}>
-          <span className="action-icon">🔁</span>
-          <span className="action-label">Recurring</span>
-        </button>
-        <button className="action-btn" title="Mind Dump" onClick={()=>setShowMindDumpModal(true)}>
-          <span className="action-icon">🧠</span>
-          <span className="action-label">Mind Dump</span>
-        </button>
-        <button className="action-btn" title="Email Me My List" onClick={()=>setShowEmailModal(true)}>
-          <span className="action-icon">✉️</span>
-          <span className="action-label">Email</span>
-        </button>
-      </div>
+      <Box className="action-bar">
+        <Button className="action-btn" title="Add Task" onClick={()=>setShowAddTaskModal(true)} startIcon={<AddIcon />} color="primary" variant="contained">
+          Add Task
+        </Button>
+        <Button className="action-btn" title="Add Recurring Task" onClick={() => setRecurringModalOpen(true)} startIcon={<AutorenewIcon />} color="secondary" variant="contained">
+          Recurring
+        </Button>
+        <Button className="action-btn" title="Mind Dump" onClick={()=>setShowMindDumpModal(true)} startIcon={<EmojiObjectsIcon />} color="secondary" variant="contained">
+          Mind Dump
+        </Button>
+        <Button className="action-btn" title="Email Me My List" onClick={()=>setShowEmailModal(true)} startIcon={<EmailIcon />} color="primary" variant="contained">
+          Email
+        </Button>
+      </Box>
       {/* --- Modals for Add Task, Email, Mind Dump --- */}
-      {showAddTaskModal && (
-        <div className="modal-bg">
-          <div className="modal big-modal fade-in-up">
-            <h3>Add a New Task</h3>
-            <input
-              className="add-input big-input"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              placeholder="Add a task..."
-              onKeyDown={e => e.key === 'Enter' && addTask()}
-              autoFocus
-            />
-            <button className="add-btn" onClick={()=>{addTask();setShowAddTaskModal(false);}}>Add</button>
-            <button className="remove-btn" onClick={()=>setShowAddTaskModal(false)}>Cancel</button>
-          </div>
-        </div>
-      )}
-      {showEmailModal && (
-        <div className="modal-bg">
-          <div className="modal big-modal fade-in-up">
-            <h3>Email Me My List</h3>
-            <input
-              className="add-input big-input"
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="Your email address"
-              autoFocus
-            />
-            <button className="add-btn" onClick={()=>{handleEmail();setShowEmailModal(false);}} disabled={!email || !tasks.length || emailStatus==='sending'}>
-              {emailStatus === 'sending' ? 'Sending...' : emailStatus === 'sent' ? 'Sent!' : emailStatus === 'error' ? 'Error!' : 'Send'}
-            </button>
-            <button className="remove-btn" onClick={()=>setShowEmailModal(false)}>Cancel</button>
-          </div>
-        </div>
-      )}
-      {showMindDumpModal && (
-        <div className="modal-bg">
-          <div className="modal big-modal fade-in-up">
-            <h3>Mind Dump</h3>
-            <textarea
-              className="mind-dump-textarea big-input"
-              value={mindDumpText}
-              onChange={e=>setMindDumpText(e.target.value)}
-              placeholder="Type anything on your mind..."
-              autoFocus
-            />
-            <button className="add-btn" onClick={()=>{handleMindDump();}}>Organize</button>
-            {mindDumpResult && (
-              <div style={{marginTop:16}}>
-                <b>AI Sorted:</b>
-                <div className="mind-dump-tags">
-                  {mindDumpResult.tags.map((t,i)=>(
-                    <span className="mind-dump-tag" key={i}>{t.tag}</span>
-                  ))}
-                </div>
-                <button className="add-btn" style={{marginTop:12}} onClick={handleAddMindDumpTasks}>Add to List</button>
-              </div>
-            )}
-            <button className="remove-btn" style={{marginTop:10}} onClick={()=>setShowMindDumpModal(false)}>Cancel</button>
-          </div>
-        </div>
-      )}
+      <Dialog open={showAddTaskModal} onClose={()=>setShowAddTaskModal(false)}>
+        <DialogTitle>Add a New Task</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Add a task..."
+            fullWidth
+            variant="outlined"
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && addTask()}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=>{addTask();setShowAddTaskModal(false);}} variant="contained" color="primary">Add</Button>
+          <Button onClick={()=>setShowAddTaskModal(false)} color="secondary">Cancel</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={showEmailModal} onClose={()=>setShowEmailModal(false)}>
+        <DialogTitle>Email Me My List</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Your email address"
+            type="email"
+            fullWidth
+            variant="outlined"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=>{handleEmail();setShowEmailModal(false);}} disabled={!email || !tasks.length || emailStatus==='sending'} variant="contained" color="primary">
+            {emailStatus === 'sending' ? 'Sending...' : emailStatus === 'sent' ? 'Sent!' : emailStatus === 'error' ? 'Error!' : 'Send'}
+          </Button>
+          <Button onClick={()=>setShowEmailModal(false)} color="secondary">Cancel</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={showMindDumpModal} onClose={()=>setShowMindDumpModal(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Mind Dump</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Type anything on your mind..."
+            fullWidth
+            multiline
+            minRows={3}
+            variant="outlined"
+            value={mindDumpText}
+            onChange={e=>setMindDumpText(e.target.value)}
+          />
+          {mindDumpResult && (
+            <Box sx={{mt:2}}>
+              <b>AI Sorted:</b>
+              <Box className="mind-dump-tags" sx={{mt:1}}>
+                {mindDumpResult.tags.map((t,i)=>(
+                  <span className="mind-dump-tag" key={i}>{t.tag}</span>
+                ))}
+              </Box>
+              <Button sx={{mt:2}} onClick={handleAddMindDumpTasks} variant="contained" color="primary">Add to List</Button>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=>setShowMindDumpModal(false)} color="secondary">Cancel</Button>
+        </DialogActions>
+      </Dialog>
       {/* --- End Modals --- */}
-      <div style={{marginBottom:18,marginTop:8}}>
-        <label style={{color:'#ffd700',fontWeight:600,marginRight:8}}>Energy:</label>
-        <select value={userState.energy} onChange={e=>setUserState(s=>({...s,energy:e.target.value}))} style={{padding:'4px 10px',borderRadius:6}}>
+      <Box sx={{marginBottom:3,marginTop:1}}>
+        <Typography component="label" sx={{color:'#ffd700',fontWeight:600,marginRight:2}}>Energy:</Typography>
+        <TextField
+          select
+          value={userState.energy}
+          onChange={e=>setUserState(s=>({...s,energy:e.target.value}))}
+          size="small"
+          sx={{minWidth:120, maxWidth:180, borderRadius:2, bgcolor:'#232325'}}
+        >
           <option value="high">High</option>
           <option value="normal">Normal</option>
           <option value="low">Low</option>
-        </select>
-        <button className="add-btn" style={{marginLeft:12}} onClick={handleSuggest}>Suggest Task</button>
-      </div>
+        </TextField>
+        <Button sx={{ml:2}} variant="outlined" color="primary" onClick={handleSuggest}>Suggest Task</Button>
+      </Box>
       {/* Mood Row */}
-      <div className="mood-row">
-        <span className="mood-label">How are you feeling?</span>
-        <button className={`mood-btn${mood==='focused'?' selected':''}`} onClick={()=>setMood('focused')} title="Focused" aria-label="Focused">😃</button>
-        <button className={`mood-btn${mood==='neutral'?' selected':''}`} onClick={()=>setMood('neutral')} title="Neutral" aria-label="Neutral">😐</button>
-        <button className={`mood-btn${mood==='foggy'?' selected':''}`} onClick={()=>setMood('foggy')} title="Foggy" aria-label="Foggy">😵‍💫</button>
-        <button className={`mood-btn${mood==='tired'?' selected':''}`} onClick={()=>setMood('tired')} title="Tired" aria-label="Tired">😴</button>
-      </div>
+      <Box className="mood-row">
+        <Typography className="mood-label">How are you feeling?</Typography>
+        <Button className={`mood-btn${mood==='focused'?' selected':''}`} onClick={()=>setMood('focused')} title="Focused" aria-label="Focused">😃</Button>
+        <Button className={`mood-btn${mood==='neutral'?' selected':''}`} onClick={()=>setMood('neutral')} title="Neutral" aria-label="Neutral">😐</Button>
+        <Button className={`mood-btn${mood==='foggy'?' selected':''}`} onClick={()=>setMood('foggy')} title="Foggy" aria-label="Foggy">😵‍💫</Button>
+        <Button className={`mood-btn${mood==='tired'?' selected':''}`} onClick={()=>setMood('tired')} title="Tired" aria-label="Tired">😴</Button>
+      </Box>
       {suggested && (
-        <div className="suggested-task fade-in" style={{background:'#232325',borderRadius:10,padding:16,marginBottom:18,boxShadow:'0 2px 12px #ffd70055'}}>
+        <Paper className="suggested-task fade-in" sx={{background:'#232325',borderRadius:2,p:2,mb:2,boxShadow:'0 2px 12px #ffd70055'}}>
           <b>AI Suggests:</b> <span style={{color:'#ffd700'}}>{suggested.text}</span>
-          <div style={{fontSize:'0.95em',color:'#ffe082',marginTop:4}}>
+          <Box sx={{fontSize:'0.95em',color:'#ffe082',mt:1}}>
             {userState.energy==='low' ? 'Low energy: try something easy.' : 'Based on your schedule.'}
-          </div>
-        </div>
+          </Box>
+        </Paper>
       )}
-      <div className="shared-row">
-        <input className="shared-input" value={sharedEmail} onChange={e=>setSharedEmail(e.target.value)} placeholder="Share with email..." />
-        <button className="shared-btn" onClick={()=>handleShareTask(0)} disabled={!sharedEmail.trim()}>Share First Task</button>
-      </div>
+      <Box className="shared-row">
+        <TextField className="shared-input" value={sharedEmail} onChange={e=>setSharedEmail(e.target.value)} placeholder="Share with email..." size="small" sx={{mr:1, minWidth:180}} />
+        <Button className="shared-btn" onClick={()=>handleShareTask(0)} disabled={!sharedEmail.trim()} variant="outlined" color="primary">Share First Task</Button>
+      </Box>
       {sharedList.length > 0 && (
-        <div style={{marginBottom:18}}>
+        <Box sx={{mb:2}}>
           <b>Shared Tasks:</b>
           {sharedList.map((l,li)=>(
-            <div key={li} style={{marginTop:8}}>
+            <Box key={li} sx={{mt:1}}>
               <span style={{color:'#ffd700'}}>{l.email}</span>
               {l.tasks.map((ti,tii)=>(
                 <span key={tii} className="nudge-label">{tasks[ti]?.text}
-                  <button className="nudge-btn" onClick={()=>handleNudge(l.email, ti)}>{l.nudged?'Nudged!':'Nudge'}</button>
-                  <button className="checkin-btn" onClick={()=>handleCheckin(l.email, ti)}>{l.checkin?'Checked In!':'Check-in'}</button>
+                  <Button className="nudge-btn" onClick={()=>handleNudge(l.email, ti)} size="small" color="secondary" variant="text">{l.nudged?'Nudged!':'Nudge'}</Button>
+                  <Button className="checkin-btn" onClick={()=>handleCheckin(l.email, ti)} size="small" color="secondary" variant="text">{l.checkin?'Checked In!':'Check-in'}</Button>
                 </span>
               ))}
-            </div>
+            </Box>
           ))}
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }
 
